@@ -1,9 +1,6 @@
-//const fetch = require('node-fetch');
-//require('dotenv').config();
 
 const getStockData = async (symbol) => {
 
-    console.log(process.env)
     const apiKey = process.env.REACT_APP_APIKEY;
      
     try {

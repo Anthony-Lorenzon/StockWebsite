@@ -1,7 +1,9 @@
+// ProfilePage.js
 import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { fetchFavorites } from '../../api'; //ensure removeFavorite function is implemented in your the api file
+import { fetchFavorites } from '../../api'; 
 import Header from '../../Header';
+import styled from 'styled-components';
 
 const ProfilePage = () => {
   const { user, isAuthenticated } = useAuth0();
@@ -47,7 +49,7 @@ const ProfilePage = () => {
           throw new Error(`Failed to remove from favorites: ${errorMessage}`);
         }
 
-        //update favorites after a it works... finally
+        
         const updatedFavorites = await fetchFavorites(user.sub);
         setFavorites(updatedFavorites);
       } catch (err) {
@@ -62,40 +64,109 @@ const ProfilePage = () => {
   };
 
   if (!isAuthenticated) {
-    return <div>Loading...</div>;
+    return <LoadingText>Loading...</LoadingText>;
   }
 
   return (
-    <div>
+    <Container>
       <Header />
-      <h1>Profile Page</h1>
-      <p>Welcome, {user.name}!</p>
-      <p>Email: {user.email}</p>
-      <p>sub thing: {user.sub}</p>
-
+      <Heading>Profile Page</Heading>
+      <UserInfo>
+        <p>Welcome, {user.name}!</p>
+        <p>Email: {user.email}</p>
+      </UserInfo>
+      
       {loading ? (
-        <p>Loading favorites...</p>
+        <LoadingText>Loading favorites...</LoadingText>
       ) : error ? (
-        <p>{error}</p>
+        <ErrorText>{error}</ErrorText>
       ) : favorites.length === 0 ? (
-        <p>You have no favorites.</p>
+        <NoFavoritesText>You have no favorites.</NoFavoritesText>
       ) : (
-        <ul>
-          {favorites.map((favorite, index) => (
-            <li key={index}>
+        <FavoritesList>
+          {favorites.map((favorite) => (
+            <FavoriteItem key={favorite.id}>
               <strong>{favorite.stockName}</strong> ({favorite.id})
-              <button
+              <RemoveButton
                 onClick={() => handleRemoveFavorite(favorite.id)}
                 disabled={isButtonDisabled}
               >
                 Remove
-              </button>
-            </li>
+              </RemoveButton>
+            </FavoriteItem>
           ))}
-        </ul>
+        </FavoritesList>
       )}
-    </div>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff; 
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const Heading = styled.h1`
+  margin-bottom: 20px;
+  color: #333; 
+`;
+
+const UserInfo = styled.div`
+  margin-bottom: 20px;
+  p {
+    margin: 5px 0;
+  }
+`;
+
+const LoadingText = styled.p`
+  color: #007bff; 
+`;
+
+const ErrorText = styled.p`
+  color: #dc3545; 
+`;
+
+const NoFavoritesText = styled.p`
+  font-size: 16px;
+  color: #666; 
+`;
+
+const FavoritesList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 600px; 
+`;
+
+const FavoriteItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9; 
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const RemoveButton = styled.button`
+  background-color: #dc3545; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background-color: #c82333; 
+  }
+`;
 
 export default ProfilePage;

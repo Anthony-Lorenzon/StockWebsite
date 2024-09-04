@@ -1,5 +1,3 @@
-//const fetch = require('node-fetch');
-
 export const fetchFavorites = async (userId) => {
   try {
     const response = await fetch(`/getprofiledata/${userId}`);

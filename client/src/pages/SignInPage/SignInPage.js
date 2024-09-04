@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
 const SignInPage = () => {
   const { loginWithRedirect, user, isAuthenticated, isLoading } = useAuth0();
@@ -8,7 +9,7 @@ const SignInPage = () => {
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    if (isLoading) return; //waiting until Auth0 has finished loading
+    if (isLoading) return; 
 
     const addUser = async () => {
       try {
@@ -28,10 +29,7 @@ const SignInPage = () => {
           throw new Error('Failed to create or update user.');
         }
 
-/*         const data = await response.json();
-        console.log('User added/updated:', data); */
-
-        //redirect to DataPage after adding/updating the user
+        
         navigate('/datapage');
       } catch (e) {
         console.error(e);
@@ -39,7 +37,7 @@ const SignInPage = () => {
     };
 
     if (isAuthenticated && user && !isRedirecting) {
-      setIsRedirecting(true); //stops it from redirecting to multiple redirects
+      setIsRedirecting(true); 
       addUser();
     }
   }, [isAuthenticated, user, isLoading, navigate, isRedirecting]);
@@ -47,7 +45,7 @@ const SignInPage = () => {
   const handleLogin = async () => {
     try {
       await loginWithRedirect({
-        appState: { returnTo: '/datapage' } //redirect to /datapage after login
+        appState: { returnTo: '/datapage' } 
       });
     } catch (e) {
       console.error(e);
@@ -55,13 +53,51 @@ const SignInPage = () => {
   };
 
   return (
-    <div>
-      <h1>Sign In</h1>
-      <button onClick={handleLogin}>Log In</button>
-      <a href="/datapage"><button>Go to Data Page as Guest</button></a> {/* navigation button */}
-      <p>This currently only works for the NYSE and displays prices in USD.</p>
-    </div>
+    <Container>
+      <Heading>Sign In</Heading>
+      <Button onClick={handleLogin}>Log In</Button>
+      <GuestLink href="/datapage">
+        <Button>Go to Data Page as Guest</Button>
+      </GuestLink>
+      <InfoText>This currently only works for the NYSE and displays prices in USD.</InfoText>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff; 
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const Heading = styled.h1`
+  margin-bottom: 20px;
+  color: #333; 
+`;
+
+const Button = styled.button`
+  background-color: #007bff; 
+  color: white;
+  margin: 10px;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    background-color: #0056b3; 
+  }
+`;
+
+const GuestLink = styled.a`
+  text-decoration: none;
+`;
+
+const InfoText = styled.p`
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666; 
+`;
 
 export default SignInPage;
